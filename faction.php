@@ -71,8 +71,8 @@ if(!$faction = load_cache(18, intval($id)))
 			SELECT ?#, entry
 			FROM creature_template, ?_factiontemplate
 			WHERE
-				faction IN (SELECT factiontemplateID FROM ?_factiontemplate WHERE factionID=?d)
-				AND factiontemplateID=faction
+				faction_A IN (SELECT factiontemplateID FROM ?_factiontemplate WHERE factionID=?d)
+				AND factiontemplateID=faction_A
 			',
 			$npc_cols[0],
 			$id

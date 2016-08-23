@@ -30,7 +30,7 @@ if(!$npcs = load_cache(2, $cache_str))
 		WHERE 1=1
 			{AND type=?}
 			{AND family=?}
-			AND factiontemplateID=faction
+			AND factiontemplateID=faction_A
 		ORDER BY minlevel DESC, name
 		{LIMIT ?d}
 		',

@@ -48,7 +48,7 @@ function creatureinfo($id)
 		}
 		WHERE
 			c.entry=?d
-			AND factiontemplateID=faction
+			AND factiontemplateID=faction_A
 		LIMIT 1
 		',
 		$npc_cols[0],
