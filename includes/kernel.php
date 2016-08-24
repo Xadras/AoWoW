@@ -37,16 +37,16 @@ function CheckPwd($username, $shapass)
 	require_once 'includes/DbSimple/Generic.php';
 	global $rDB;
 	global $AoWoWconf;
-	$user_row = $rDB->selectRow('SELECT id, LOWER(sha_pass_hash) AS sha_pass_hash FROM account WHERE username = ? LIMIT 1', $username);
+	$user_row = $rDB->selectRow('SELECT account_id, LOWER(pass_hash) AS pass_hash FROM account WHERE username = ? LIMIT 1', $username);
 	if ($user_row)
 	{
-		if ($shapass == $user_row['sha_pass_hash'])
+		if ($shapass == $user_row['pass_hash'])
 		{
 			$user = array();
-			$user['id'] = $user_row['id'];
+			$user['id'] = $user_row['account_id'];
 			$user['name'] = $username;
-			$user_gmrow = $rDB->selectRow('SELECT gmlevel FROM account_access WHERE id = ?', $user_row['id']);
-			$user['roles'] = ($user_gmrow['gmlevel']>0)? 2: 0;
+			$user_gmrow = $rDB->selectRow('SELECT permission_mask FROM account_permissions WHERE account_id = ?', $user_row['account_id']);
+			$user['roles'] = ($user_gmrow['permission_mask']>1)? 2: 0;
 			$user['perms'] = 1;
 			return $user;
 		} else {

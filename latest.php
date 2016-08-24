@@ -46,7 +46,7 @@ switch($_GET['latest'])
 					$comments[$i]['subject'] = $DB->selectCell('SELECT name FROM '.$types[$row['type']].'_template WHERE entry=?d LIMIT 1', $row['typeID']);
 					break;
 			}
-			$comments[$i]['user'] = $rDB->selectCell('SELECT username FROM account WHERE id=?d LIMIT 1', $row['user']);
+			$comments[$i]['user'] = $rDB->selectCell('SELECT username FROM account WHERE account_id=?d LIMIT 1', $row['user']);
 			if(empty($comments[$i]['user']))
 				$comments[$i]['user'] = 'Anonymous';
 			$comments[$i]['rating'] = array_sum($DB->selectCol('SELECT rate FROM ?_comments_rates WHERE commentid=?d', $row['id']));

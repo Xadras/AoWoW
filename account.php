@@ -12,20 +12,25 @@ if (($_REQUEST['account']=='signup') and (isset($_POST['username'])) and (isset(
 		$smarty->assign('signup_error', $smarty->get_config_vars('Different_passwords'));
 	} else {
 		// Существует ли уже такой пользователь?
-		if ($rDB->selectCell('SELECT Count(id) FROM account WHERE username=? LIMIT 1', $_POST['username']) == 1)
+		if ($rDB->selectCell('SELECT Count(account_id) FROM account WHERE username=? LIMIT 1', $_POST['username']) == 1)
 		{
 			$smarty->assign('signup_error', $smarty->get_config_vars('Such_user_exists'));
 		} else {
 			// Вроде все нормально, создаем аккаунт
-			$success = $rDB->selectCell('INSERT INTO account(`username`, `sha_pass_hash`, `gmlevel`, `email`, `joindate`, `tbc`, `last_ip`)
-				VALUES (?, ?, 0, ?, NOW(), 1, ?)',
+			$success = $rDB->selectCell('INSERT INTO account(`username`, `pass_hash`, `email`, `join_date`, `last_ip`)
+				VALUES (?, ?, ?, NOW(), ?)',
 				$_POST['username'],
 				create_usersend_pass($_POST['username'], $_POST['password']),
 				(isset($_POST['email']))? $_POST['email'] : '',
 				(isset($_SERVER["REMOTE_ADDR"]))? $_SERVER["REMOTE_ADDR"] : ''
 			);
 			if ($success > 0)
-			{
+			{	
+				/*$acc_id = $rDB->selectCell('SELECT account_id FROM account WHERE username=?', $_POST['username']) ;
+				$success = $rDB->selectCell('INSERT INTO account_permissions(`account_id`, `realm_id`, `permission_mask`)
+				VALUES (?, 1, 1)',
+				$acc_id);*/
+
 				// Все отлично, авторизуем
 				$_REQUEST['account']='signin';
 			} else {

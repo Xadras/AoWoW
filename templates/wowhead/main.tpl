@@ -27,7 +27,7 @@
 		<div class="pad"></div>
 
 		<div id="toplinks" class="toplinks">
-	{if $user}<a href="?user={$user.name}">{$user.name}</a>|<a href="?account=signout">{#Sign_out#}</a>{else}<a href="?account=signin">{#Sign_in#}</a>{/if}|<a href="javascript:;" id="language-changer">{#Language#} <small>&#9660;</small></a>
+	{if $user}<a href="?user={$user.name}">{$user.name}</a>|<a href="?account=signout">{#Sign_out#}</a>{else}<a href="?account=signin">{#Sign_in#}</a>{/if}
 		</div>
 
 		<script type="text/javascript">g_initLanguageChanger()</script>
