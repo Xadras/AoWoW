@@ -323,11 +323,24 @@ function loot_table($table, $lootid, $max_percent=100)
 		WHERE
 			l.entry=?d
 		{LIMIT ?d}
+		UNION
+		SELECT r.ChanceOrQuestChance, r.mincountOrRef, r.maxcount as `d-max`, r.groupid, ?#, i.entry, i.maxcount
+			{, loc.name_loc?d AS `name_loc`} 
+		From creature_loot_template l, reference_loot_template r
+			LEFT JOIN (aowow_icons a, item_template i) ON r.item=i.entry AND a.id=i.displayid
+			LEFT JOIN (locales_item loc) ON loc.entry=i.entry AND 1
+		where
+			r.entry = -l.mincountOrRef AND l.entry=?d
+		{LIMIT ?d}
 		',
 		$item_cols[2],
 		($_SESSION['locale'])? $_SESSION['locale']: DBSIMPLE_SKIP,
 		$table,
 		($_SESSION['locale'])? 1: DBSIMPLE_SKIP,
+		$lootid,
+		($AoWoWconf['limit']!=0)? $AoWoWconf['limit']: DBSIMPLE_SKIP,
+		$item_cols[2],
+		($_SESSION['locale'])? $_SESSION['locale']: DBSIMPLE_SKIP,
 		$lootid,
 		($AoWoWconf['limit']!=0)? $AoWoWconf['limit']: DBSIMPLE_SKIP
 	);
