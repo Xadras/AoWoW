@@ -26,3 +26,6 @@ cache/*
 .hg/
 .hgignore
 .hgtags
+
+#config
+configs/config.php
