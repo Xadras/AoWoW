@@ -8,7 +8,8 @@
 			<script type="text/javascript">
 				g_initPath({$page.path});
 			</script>
-
+			{*include file='bricks/info.tpl'*}
+{include file='bricks/filters.tpl'}
 			<div id="lv-items" class="listview"></div>
 
 <script type="text/javascript">

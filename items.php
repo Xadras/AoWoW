@@ -1,11 +1,12 @@
 <?php
 
-// Необходима функция iteminfo
+// ?????????? ??????? iteminfo
 require_once('includes/allitems.php');
+require_once('includes/allreputation.php');
 
 $smarty->config_load($conf_file, 'items');
 
-// Разделяем из запроса класс и подкласс вещей
+// ????????? ?? ??????? ????? ? ???????? ?????
 point_delim($podrazdel,$class,$subclass);
 
 global $DB;
@@ -16,7 +17,65 @@ if(!$items = load_cache(7, $cache_str))
 {
 	unset($items);
 
-	// Составляем запрос к БД, выполняющий поиск по заданным классу и подклассу
+// ???????;
+   $slots = null;
+   if(isset($_REQUEST['sl'])){
+       if(is_array($_REQUEST['sl'])){
+           $sl = $_REQUEST['sl'];
+           foreach($sl as $k=>$v){
+               if(is_numeric($v)){
+                   $slots[] = $v;
+               }
+           }
+       }
+   }
+   if(!is_array($slots)){
+       if(isset($type)){
+           $slots[] = $type;
+       }else{
+           for($i=0;$i<=28;$i++){
+              $slots[] = $i; 
+           }
+       }
+   }
+   
+   // ???
+   $quality = null;
+   if(isset($_REQUEST['qu'])){
+       
+       if(is_array($_REQUEST['qu'])){
+           $qu = $_REQUEST['qu'];
+           foreach($qu as $q=>$u){
+               if(is_numeric($u)){
+                   $quality[] = $u;
+               }
+           }
+       }
+   }
+   
+   if(!is_array($quality)){
+           for($i=0;$i<=7;$i++){
+              $quality[] = $i; 
+           }
+   }
+   $ad = "DESC";
+     if(isset($_REQUEST['gb']) && is_numeric($_REQUEST['gb'])){
+         
+         if($_REQUEST['gb']==1){
+             $gb = 'InventoryType';
+         }elseif($_REQUEST['gb']==2){
+             $gb = 'RequiredLevel';
+         }elseif($_REQUEST['gb']==2){
+             $gb = 'name';
+             $ad = "ASC";
+         }else{
+             $gb = 'quality';
+         }
+     }else{
+          $gb = 'quality';
+     }
+
+	// ?????????? ?????? ? ??, ??????????? ????? ?? ???????? ?????? ? ?????????
 	$rows = $DB->select('
 		SELECT ?#, i.entry, maxcount
 			{, l.name_loc?d AS `name_loc`}
@@ -26,14 +85,32 @@ if(!$items = load_cache(7, $cache_str))
 			id=displayid
 			{ AND class=? }
 			{ AND subclass=? }
-			ORDER BY quality DESC, name
-			LIMIT 200
+            { AND i.ItemLevel >= ? }
+            { AND i.ItemLevel <= ? }
+            { AND i.RequiredLevel >= ?}
+            { AND i.RequiredLevel <= ?}
+            { AND i.name LIKE ? }
+            { AND i.InventoryType IN (?a) }
+            { AND i.Quality IN ( ?a ) }
+            
+		ORDER BY quality DESC, name
 		',
 		$item_cols[2],
 		($_SESSION['locale'])? $_SESSION['locale']: DBSIMPLE_SKIP,
 		($_SESSION['locale'])? 1: DBSIMPLE_SKIP,
 		($class!='')? $class: DBSIMPLE_SKIP,
-		($subclass!='')? $subclass: DBSIMPLE_SKIP
+		($subclass!='')? $subclass: DBSIMPLE_SKIP,
+        // search
+        isset($_REQUEST['minle']) && is_numeric($_REQUEST['minle']) ? $_REQUEST['minle'] : "0",   // min item level
+        isset($_REQUEST['maxle']) && is_numeric($_REQUEST['maxle']) ? $_REQUEST['maxle'] : "120", // max item level
+        
+        isset($_REQUEST['minrl']) && is_numeric($_REQUEST['minrl']) ? $_REQUEST['minrl'] : "0",   // min reuqest level
+        isset($_REQUEST['maxrl']) && is_numeric($_REQUEST['maxrl']) ? $_REQUEST['maxrl'] : "70",  // max request level
+        isset($_REQUEST['na']) ? "%". strip_tags(str_replace(array('[',']'),array('',''),urldecode($_REQUEST['na']))). "%" : "%%", // search by name
+        
+        $slots,
+        $quality,
+        $gb
 	);
 
 	$i=0;
@@ -60,13 +137,13 @@ $page = array(
 );
 $smarty->assign('page', $page);
 
-// Статистика выполнения mysql запросов
+// ?????????? ?????????? mysql ????????
 $smarty->assign('mysql', $DB->getStatistics());
-// Если хоть одна информация о вещи найдена - передаём массив с информацией о вещях шаблонизатору
+// ???? ???? ???? ?????????? ? ???? ??????? - ???????? ?????? ? ??????????? ? ????? ?????????????
 if (count($allitems)>=0)
 	$smarty->assign('allitems',$allitems);
 if (count($items>=0))
 	$smarty->assign('items', $items);
-// Загружаем страницу
+// ????????? ????????
 $smarty->display('items.tpl');
 ?>

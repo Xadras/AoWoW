@@ -363,7 +363,7 @@ function render_item_tooltip(&$Row)
 		require_once ('includes/game.php');
 		global $rep_levels;
 		$row = factioninfo($Row['RequiredReputationFaction']);
-		$x .= LOCALE_REQUIRES.' '.$row['name'].' - '.$rep_levels[$Row['RequiredReputationRank']];
+		$x .= LOCALE_REQUIRES.' '.$row['name']['name'].' - '.$rep_levels[$Row['RequiredReputationRank']];
 	}
 
 	$x .= '</td></tr></table>';
